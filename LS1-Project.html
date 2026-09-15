@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project LS1 – Human Body Systems Book</title>
+<style>
+:root{
+  --fs: 1;
+  --ink:#243247; --paper:#fffdf8; --accent:#5f6fc7; --accent2:#e8ebff;
+  --green:#dff4e8; --yellow:#fff2c9; --red:#ffe0df; --blue:#dff1fb;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:
+radial-gradient(circle at 15% 15%,#e9f5ff 0 7%,transparent 7.3%),
+radial-gradient(circle at 85% 80%,#f1eaff 0 8%,transparent 8.3%),
+#f7f8fc; overflow:hidden}
+header{height:146px;background:#fff;border-bottom:3px solid #e5e8f2;display:flex;align-items:flex-start;gap:20px;padding:14px 28px 54px;position:relative;z-index:5}
+.brand{flex:1}
+.brand small{font-weight:800;letter-spacing:2px;color:var(--accent)}
+.brand h1{font-size:calc(24px * var(--fs));margin:3px 0 0}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button{font:inherit;border:0;cursor:pointer}
+.pill{background:#eef0f7;color:var(--ink);padding:10px 13px;border-radius:12px;font-weight:800}
+.pill.active{background:var(--accent);color:#fff}
+.stepmenu{position:absolute;left:24px;right:24px;bottom:11px;display:flex;gap:6px;align-items:center;justify-content:center}
+.stepdot{height:31px;min-width:31px;padding:0 8px;border-radius:10px;background:#eef0f7;color:#697386;font-size:12px;font-weight:900;border:2px solid transparent;transition:.2s}
+.stepdot:hover{transform:translateY(-1px);background:#e4e7f3}
+.stepdot.done{background:#e8ebff;color:#4b5cb7}
+.stepdot.current{background:var(--accent);color:white;border-color:#414f9c;transform:translateY(-2px);box-shadow:0 4px 10px #5f6fc744}
+.stepdot.current::after{content:"";display:block;width:6px;height:6px;border-radius:50%;background:#fff;margin:2px auto 0}
+.progress{height:5px;background:#e7e9f1;position:absolute;bottom:-3px;left:0;right:0}
+.progress span{display:block;height:100%;background:var(--accent);transition:.3s}
+main{height:calc(100vh - 146px);display:grid;grid-template-columns:120px 1fr 120px;align-items:center;padding:14px 20px}
+.navbtn{width:82px;height:82px;border-radius:50%;background:#fff;box-shadow:0 8px 25px #24324722;font-size:36px;color:var(--accent);justify-self:center}
+.navbtn:disabled{opacity:.25;cursor:default}
+.card{height:min(690px,calc(100vh - 140px));max-width:1120px;width:100%;margin:auto;background:var(--paper);border-radius:28px;box-shadow:0 16px 45px #2432471c;padding:32px 42px;display:grid;grid-template-columns:1fr 1.05fr;gap:35px;align-items:center;overflow:hidden}
+.step{font-size:calc(15px * var(--fs));font-weight:900;color:var(--accent);letter-spacing:1.4px;text-transform:uppercase}
+h2{font-size:calc(43px * var(--fs));line-height:1.05;margin:10px 0 20px}
+.copy{font-size:calc(22px * var(--fs));line-height:1.45}
+.copy strong{color:#394ca9}
+.note{margin-top:20px;padding:15px 18px;border-radius:16px;background:var(--yellow);font-size:calc(18px * var(--fs));font-weight:700}
+.visual{height:100%;min-height:430px;border-radius:24px;background:#f5f6fb;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden}
+svg{width:100%;height:100%;max-height:530px}
+.layerlist{display:grid;gap:8px;margin-top:18px}
+.layer{padding:9px 14px;border-radius:12px;font-size:calc(17px * var(--fs));font-weight:800}
+.l1{background:#f4dff0}.l2{background:#dff1fb}.l3{background:#fff0cf}.l4{background:#dff4e8}.l5{background:#ffe0df}.l6{background:#e7e2ff}.l7{background:#e6e6e6}
+.footerhint{position:fixed;bottom:8px;left:50%;transform:translateX(-50%);font-size:12px;color:#778096}
+@media(max-width:850px){
+ header{height:155px;min-height:155px;padding:12px 16px 55px}.brand h1{font-size:20px}
+ .stepmenu{left:8px;right:8px;overflow-x:auto;justify-content:flex-start;padding-bottom:2px}
+ .stepdot{flex:0 0 auto}
+ main{height:calc(100vh - 155px);grid-template-columns:55px 1fr 55px;padding:10px 2px}
+ .navbtn{width:48px;height:48px;font-size:25px}
+ .card{padding:22px;grid-template-columns:1fr;height:calc(100vh - 130px);overflow:auto}
+ .visual{min-height:300px}
+ h2{font-size:calc(31px * var(--fs))}.copy{font-size:calc(18px * var(--fs))}
+}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><small>MR. RÍOS · NATURAL SCIENCE</small><h1>Project LS1 · Human Body Systems Book</h1></div>
+ <div class="controls">
+  <button class="pill active" id="en">EN</button><button class="pill" id="es">ES</button>
+  <button class="pill" data-size=".82">A−</button><button class="pill active size" data-size="1">A</button><button class="pill" data-size="1.22">A+</button>
+ </div>
+ <div class="stepmenu" id="stepmenu" aria-label="Project steps"></div>
+ <div class="progress"><span id="bar"></span></div>
+</header>
+<main>
+<button class="navbtn" id="prev" aria-label="Previous">‹</button>
+<section class="card">
+ <div>
+  <div class="step" id="step"></div>
+  <h2 id="title"></h2>
+  <div class="copy" id="copy"></div>
+  <div class="note" id="note"></div>
+ </div>
+ <div class="visual" id="visual"></div>
+</section>
+<button class="navbtn" id="next" aria-label="Next">›</button>
+</main>
+<div class="footerhint">Use ← → keys or the buttons to move through the guide.</div>
+
+<script>
+const V = {
+ base:`<svg viewBox="0 0 500 500"><rect x="100" y="35" width="300" height="425" rx="8" fill="#fff" stroke="#26364c" stroke-width="6"/><path d="M115 55h55M115 70h35" stroke="#9ba6b5" stroke-width="5"/><text x="250" y="250" text-anchor="middle" font-size="55" font-weight="900" fill="#5f6fc7">A4</text><path d="M80 35v425M70 45l10-10 10 10M70 450l10 10 10-10" stroke="#5f6fc7" stroke-width="5" fill="none"/></svg>`,
+ whole:`<svg viewBox="0 0 500 500"><rect x="75" y="25" width="350" height="450" rx="10" fill="#fff" stroke="#b7bfcc" stroke-width="5"/><g fill="#f5d7c5" stroke="#26364c" stroke-width="5"><circle cx="250" cy="90" r="43"/><path d="M205 140 Q250 120 295 140 L325 275 290 290 282 440 250 440 218 440 210 290 175 275z"/></g><g stroke="#a95d8b" stroke-width="9" fill="none" stroke-linecap="round"><path d="M235 300q15-25 30 0v55"/><path d="M220 320q30 25 60 0"/></g><path d="M120 450h260" stroke="#5f6fc7" stroke-width="8"/><text x="250" y="468" text-anchor="middle" font-size="17" font-weight="800" fill="#5f6fc7">GLUE TO THE BASE</text></svg>`,
+ labels:`<svg viewBox="0 0 500 500"><g fill="#f5d7c5" stroke="#26364c" stroke-width="5"><circle cx="250" cy="80" r="42"/><path d="M205 130 Q250 112 295 130 L325 270 290 285 282 440 250 440 218 440 210 285 175 270z"/></g><g stroke="#5f6fc7" stroke-width="4"><path d="M275 175h100"/><path d="M275 230h100"/><path d="M275 300h100"/></g><g fill="#fff" stroke="#5f6fc7" stroke-width="3"><rect x="375" y="158" width="100" height="30" rx="8"/><rect x="375" y="213" width="100" height="30" rx="8"/><rect x="375" y="283" width="100" height="30" rx="8"/></g><text x="420" y="110" text-anchor="middle" font-size="26" font-weight="900" fill="#5f6fc7">LABELS ✓</text></svg>`,
+ cut:`<svg viewBox="0 0 500 500"><g fill="#f5d7c5" stroke="#26364c" stroke-width="5"><circle cx="250" cy="80" r="42"/><path d="M205 130 Q250 112 295 130 L325 270 290 285 282 440 250 440 218 440 210 285 175 270z"/></g><path d="M250 38v405" stroke="#e75c5c" stroke-width="5" stroke-dasharray="12 10"/><g transform="translate(250 245) rotate(-10)"><circle cx="-18" cy="0" r="18" fill="none" stroke="#26364c" stroke-width="5"/><circle cx="18" cy="0" r="18" fill="none" stroke="#26364c" stroke-width="5"/><path d="M0 0l60-55M0 0l60 55" stroke="#26364c" stroke-width="6"/></g><text x="250" y="480" text-anchor="middle" font-size="22" font-weight="900" fill="#e75c5c">CUT DOWN THE CENTRE</text></svg>`,
+ tape:`<svg viewBox="0 0 500 500"><rect x="80" y="35" width="340" height="425" rx="10" fill="#fff" stroke="#b7bfcc" stroke-width="4"/><g fill="#f5d7c5" stroke="#26364c" stroke-width="5"><path d="M245 45a42 42 0 0 0-42 42c0 18 11 34 27 40l-28 8-32 135 35 15 8 155h32z"/><path d="M255 45a42 42 0 0 1 42 42c0 18-11 34-27 40l28 8 32 135-35 15-8 155h-32z"/></g><rect x="160" y="120" width="18" height="270" fill="#ffd85e" opacity=".8"/><rect x="322" y="120" width="18" height="270" fill="#ffd85e" opacity=".8"/><path d="M150 105l-55-45M350 105l55-45" stroke="#5f6fc7" stroke-width="5"/><text x="68" y="55" font-size="20" font-weight="900" fill="#5f6fc7">TAPE</text><text x="375" y="55" font-size="20" font-weight="900" fill="#5f6fc7">TAPE</text><path d="M240 250h-80M260 250h80" stroke="#e75c5c" stroke-width="6" marker-end="url(#a)" marker-start="url(#a)"/><defs><marker id="a" markerWidth="8" markerHeight="8" refX="4" refY="4"><path d="M8 0L0 4l8 4" fill="none" stroke="#e75c5c" stroke-width="2"/></marker></defs></svg>`,
+ doors:`<svg viewBox="0 0 500 500"><rect x="90" y="35" width="320" height="425" rx="10" fill="#fff" stroke="#b7bfcc" stroke-width="4"/><g fill="#dff4e8" stroke="#26364c" stroke-width="5"><path d="M245 50a40 40 0 0 0-40 40c0 17 10 31 25 38l-30 10-30 130 35 15 8 150h32z" transform="rotate(-20 170 250) translate(-45 0)"/><path d="M255 50a40 40 0 0 1 40 40c0 17-10 31-25 38l30 10 30 130-35 15-8 150h-32z" transform="rotate(20 330 250) translate(45 0)"/></g><g fill="#ffe0df" stroke="#26364c" stroke-width="4"><circle cx="250" cy="95" r="35"/><path d="M215 140h70l25 120-30 15-5 145h-50l-5-145-30-15z"/></g><path d="M185 245H80M315 245h105" stroke="#5f6fc7" stroke-width="6"/><text x="250" y="470" text-anchor="middle" font-size="22" font-weight="900" fill="#5f6fc7">OPEN FROM THE CENTRE</text></svg>`,
+ layers:`<svg viewBox="0 0 500 500"><g stroke="#26364c" stroke-width="3"><rect x="85" y="365" width="330" height="55" rx="10" fill="#f4dff0"/><rect x="95" y="320" width="310" height="55" rx="10" fill="#dff1fb"/><rect x="105" y="275" width="290" height="55" rx="10" fill="#fff0cf"/><rect x="115" y="230" width="270" height="55" rx="10" fill="#dff4e8"/><rect x="125" y="185" width="250" height="55" rx="10" fill="#ffe0df"/><rect x="135" y="140" width="230" height="55" rx="10" fill="#e7e2ff"/><rect x="145" y="95" width="210" height="55" rx="10" fill="#e6e6e6"/></g><g font-size="18" font-weight="900" fill="#26364c" text-anchor="middle"><text x="250" y="400">REPRODUCTIVE</text><text x="250" y="355">EXCRETORY</text><text x="250" y="310">DIGESTIVE</text><text x="250" y="265">RESPIRATORY</text><text x="250" y="220">CIRCULATORY</text><text x="250" y="175">NERVOUS</text><text x="250" y="130">LOCOMOTOR</text></g><path d="M435 390V110" stroke="#5f6fc7" stroke-width="6"/><path d="M435 100l-12 20h24z" fill="#5f6fc7"/><text x="455" y="255" transform="rotate(-90 455 255)" text-anchor="middle" font-size="17" font-weight="900" fill="#5f6fc7">BUILD UP</text></svg>`,
+ finish:`<svg viewBox="0 0 500 500"><rect x="100" y="35" width="300" height="420" rx="12" fill="#fff" stroke="#26364c" stroke-width="5"/><g fill="#e6e6e6" stroke="#26364c" stroke-width="5"><circle cx="250" cy="100" r="42"/><path d="M205 150h90l30 125-35 15-8 135h-64l-8-135-35-15z"/></g><path d="M250 58v367" stroke="#5f6fc7" stroke-width="4" stroke-dasharray="8 8"/><path d="M225 225h-65M275 225h65" stroke="#5f6fc7" stroke-width="6"/><text x="250" y="475" text-anchor="middle" font-size="21" font-weight="900" fill="#5f6fc7">YOUR HUMAN BODY SYSTEMS BOOK!</text></svg>`
+};
+
+const data = {
+en:[
+["Step 1 of 10","Our Project","We are going to create an <strong>interactive Human Body Systems Book</strong>. Each system is a layer. Open the body from the centre to discover the next system.","Work carefully. Every layer must be in the correct order.",V.finish],
+["Step 2 of 10","Prepare the Base","Cut a piece of cardboard to <strong>A4 size</strong>. This will be the strong base of your book.","Keep the base flat and write your name on the back.",V.base],
+["Step 3 of 10","First Layer","Complete the labels on the <strong>Reproductive System</strong>. Keep this body whole and glue it directly onto the A4 cardboard.","Do NOT cut this first layer in half.",V.whole],
+["Step 4 of 10","Complete the Labels","Take the worksheet for the next body system. <strong>Complete all the labels first</strong>. Check your work before you start cutting.","Labels first → cutting second.",V.labels],
+["Step 5 of 10","Cut the Body","Cut carefully around the body silhouette. Then cut the body <strong>vertically down the centre</strong> to make a left half and a right half.","You need TWO halves: left + right.",V.cut],
+["Step 6 of 10","Add Tape","Place both halves over the previous layer. Add tape <strong>ONLY to the outside edge</strong> of each half.","Do not put tape in the centre. The centre must open!",V.tape],
+["Step 7 of 10","Make the Doors","Check that both halves open from the centre like <strong>two doors</strong>. The left half opens left. The right half opens right.","← LEFT HALF  |  CENTRE  |  RIGHT HALF →",V.doors],
+["Step 8 of 10","Add the Layers","Repeat the same process for every new system. Build the book from the deepest layer to the outside layer.","Reproductive → Excretory → Digestive → Respiratory → Circulatory → Nervous → Locomotor",V.layers],
+["Step 9 of 10","Top Layer","The <strong>Locomotor System</strong> is the final outside layer. It is the first system we see when the project is closed.","Open each layer to reveal the system underneath.",V.finish],
+["Step 10 of 10","Final Check","Your book is ready when every system is labelled, the layers are in the correct order, and all the doors open without covering the layers underneath.","Closed: Locomotor → open → Nervous → Circulatory → Respiratory → Digestive → Excretory → Reproductive.",V.layers]
+],
+es:[
+["Paso 1 de 10","Nuestro proyecto","Vamos a crear un <strong>libro interactivo de los sistemas del cuerpo humano</strong>. Cada sistema será una capa. Abriremos el cuerpo desde el centro para descubrir el siguiente sistema.","Trabaja con cuidado. Todas las capas deben estar en el orden correcto.",V.finish],
+["Paso 2 de 10","Prepara la base","Corta una cartulina de <strong>tamaño A4</strong>. Será la base resistente de nuestro libro.","Mantén la cartulina plana y escribe tu nombre por detrás.",V.base],
+["Paso 3 de 10","Primera capa","Completa las etiquetas del <strong>Reproductive System</strong>. Mantén este cuerpo entero y pégalo directamente sobre la cartulina A4.","NO cortes esta primera capa por la mitad.",V.whole],
+["Paso 4 de 10","Completa los labels","Coge la ficha del siguiente sistema. <strong>Completa primero todos los labels</strong>. Revisa tu trabajo antes de empezar a recortar.","Primero labels → después recortar.",V.labels],
+["Paso 5 de 10","Recorta el cuerpo","Recorta con cuidado la silueta. Después corta el cuerpo <strong>verticalmente por el centro</strong> para obtener una mitad izquierda y otra derecha.","Necesitas DOS mitades: izquierda + derecha.",V.cut],
+["Paso 6 de 10","Pon la cinta","Coloca las dos mitades sobre la capa anterior. Pon cinta adhesiva <strong>SOLO en el borde exterior</strong> de cada mitad.","No pongas cinta en el centro. ¡El centro tiene que abrirse!",V.tape],
+["Paso 7 de 10","Crea las puertas","Comprueba que las dos mitades se abren desde el centro como <strong>dos puertas</strong>. La izquierda abre hacia la izquierda y la derecha hacia la derecha.","← MITAD IZQUIERDA  |  CENTRO  |  MITAD DERECHA →",V.doors],
+["Paso 8 de 10","Añade las capas","Repite el mismo proceso con cada sistema. Construye el libro desde la capa más profunda hasta la exterior.","Reproductive → Excretory → Digestive → Respiratory → Circulatory → Nervous → Locomotor",V.layers],
+["Paso 9 de 10","Capa exterior","El <strong>Locomotor System</strong> es la última capa exterior. Será el primer sistema que veremos cuando el proyecto esté cerrado.","Abre cada capa para descubrir el sistema que hay debajo.",V.finish],
+["Paso 10 de 10","Revisión final","El libro está listo cuando todos los sistemas tienen sus labels, las capas están en el orden correcto y todas las puertas se abren sin tapar las capas inferiores.","Cerrado: Locomotor → abrir → Nervous → Circulatory → Respiratory → Digestive → Excretory → Reproductive.",V.layers]
+]};
+
+let lang="en", i=0;
+const menuNames={
+ en:["Project","Base","1st Layer","Labels","Cut","Tape","Doors","Layers","Top","Check"],
+ es:["Proyecto","Base","1ª capa","Labels","Cortar","Cinta","Puertas","Capas","Exterior","Revisión"]
+};
+function buildMenu(){
+ stepmenu.innerHTML="";
+ menuNames[lang].forEach((name,idx)=>{
+   const b=document.createElement("button");
+   b.className="stepdot"+(idx<i?" done":"")+(idx===i?" current":"");
+   b.innerHTML=`<span>${idx+1}</span> ${name}`;
+   b.title=(lang==="en"?"Go to step ":"Ir al paso ")+(idx+1);
+   b.onclick=()=>{i=idx;render()};
+   stepmenu.appendChild(b);
+ });
+ const current=stepmenu.querySelector(".current");
+ if(current) current.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});
+}
+function render(){
+ const d=data[lang][i];
+ step.textContent=d[0]; title.textContent=d[1]; copy.innerHTML=d[2]; note.innerHTML=d[3]; visual.innerHTML=d[4];
+ bar.style.width=((i+1)/data[lang].length*100)+"%";
+ prev.disabled=i===0; next.disabled=i===data[lang].length-1;
+ document.documentElement.lang=lang;
+ buildMenu();
+}
+prev.onclick=()=>{if(i>0){i--;render()}};
+next.onclick=()=>{if(i<data[lang].length-1){i++;render()}};
+document.addEventListener("keydown",e=>{if(e.key==="ArrowRight")next.click();if(e.key==="ArrowLeft")prev.click()});
+en.onclick=()=>{lang="en";en.classList.add("active");es.classList.remove("active");render()};
+es.onclick=()=>{lang="es";es.classList.add("active");en.classList.remove("active");render()};
+document.querySelectorAll("[data-size]").forEach(b=>b.onclick=()=>{
+ document.documentElement.style.setProperty("--fs",b.dataset.size);
+ document.querySelectorAll("[data-size]").forEach(x=>x.classList.remove("active")); b.classList.add("active");
+});
+render();
+</script>
+</body>
+</html>
